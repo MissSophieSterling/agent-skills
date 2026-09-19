@@ -29,7 +29,7 @@ codex exec --ephemeral --skip-git-repo-check -m gpt-5.6-luna -c 'model_reasoning
 ```
 
 - `--no-session-persistence` (Claude Code) and `--ephemeral` (Codex) keep the ping out of the resume history.
-- Codex refuses to run outside a Git repo or trusted folder unless you pass `--skip-git-repo-check`. A scheduler starts in the home folder, so without it the ping fails silently every morning.
+- Codex refuses to run outside a Git repo or trusted folder unless you pass `--skip-git-repo-check`. A scheduled job starts outside any Git repo (the home folder under cron, `/` under launchd), so without it the ping fails silently every morning.
 - `</dev/null` stops `codex exec` from waiting for input on stdin.
 - Pin the effort low. The ping inherits the reasoning effort from your Codex config, and even a one-word ping carries the instruction files and skill list. In one run on a setup whose default was the top effort level, it used about 15,500 tokens; at low, about 5,800.
 - Use full paths in schedulers (`which claude`, `which codex`): they don't load your shell's PATH. If `which` points to an npm install, node has to be on the job's PATH too (a `PATH=` line at the top of the crontab, or `EnvironmentVariables` in the plist).

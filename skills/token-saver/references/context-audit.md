@@ -11,7 +11,7 @@ Whatever loads at session start is paid for on every turn of every session. A bl
 | Claude Code | `/context` | tokens by category: system, tools, MCP, memory files, skills, messages |
 | Codex | `/status` | token usage and remaining context |
 | Codex | `codex debug prompt-input` | the exact input the model sees (experimental) |
-| Gemini CLI | `/memory show`, `/stats` | the loaded GEMINI.md text; session token use |
+| Gemini CLI | `/memory show`, `/mcp`, `/stats model` | the loaded GEMINI.md text; servers and tools; token counts and quota |
 
 Write the number down. That's the fixed cost of every turn.
 

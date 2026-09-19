@@ -46,7 +46,7 @@ default_subagent_reasoning_effort = "medium"
 max_concurrent_threads_per_session = 4
 ```
 
-A cheap model at maximum reasoning effort can burn much of its price advantage on reasoning tokens. Start at medium and raise it only if the results need it.
+A cheap model at maximum effort still burns a lot of thinking tokens (Artificial Analysis counted about 28,000 per task for GPT-5.6 Luna at max). Start at medium and raise it only if the results need it.
 
 **Any API**: route calls by task type: the small model for classification and extraction, the large one for synthesis and final review.
 

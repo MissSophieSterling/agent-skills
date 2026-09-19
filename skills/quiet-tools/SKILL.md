@@ -4,7 +4,7 @@ description: Cut tool-output noise (test logs, build logs, installs, huge search
 license: MIT
 metadata:
   author: Sophie Sterling
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Quiet tools
@@ -17,7 +17,7 @@ Run in quiet modes and let the exit code carry success:
 
 ```
 pytest -q --tb=short
-npm test --silent
+npm test --silent      # hides npm's own banner; the runner's quiet flag does the rest
 cargo test -q
 go test ./...
 git status --short

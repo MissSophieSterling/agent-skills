@@ -10,7 +10,7 @@ Run in quiet modes and let the exit code carry success:
 
 ```
 pytest -q --tb=short
-npm test --silent
+npm test --silent      # hides npm's own banner; the runner's quiet flag does the rest
 cargo test -q
 go test ./...
 git status --short

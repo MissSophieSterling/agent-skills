@@ -4,7 +4,7 @@ description: Full playbook for making an AI coding agent's plan usage last longe
 license: MIT
 metadata:
   author: Sophie Sterling
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Token saver
@@ -34,7 +34,7 @@ Model choice multiplies all four: the same work on a cheaper model costs a fract
 
 - Quiet tools, full failures: `references/quiet-tools.md`.
 - Short answers: `references/short-answers.md`.
-- Wrong direction? Interrupt early. Tokens already spent don't come back, but the next ones don't have to be spent. Claude Code: `Esc` stops the turn and keeps the work so far (a message typed while it works waits in a queue). Codex CLI: `Enter` steers mid-run, `Tab` queues; in the app it's Settings → General → Follow-up behavior. Gemini CLI: experimental model steering (`/settings`, Model Steering).
+- Wrong direction? Interrupt early. Tokens already spent don't come back, but the next ones don't have to be spent. Claude Code: `Esc` stops the turn and keeps the work so far; a message typed while it works is queued and reaches it as soon as the running tool calls finish. Codex CLI: `Enter` steers mid-run, `Tab` queues; in the app it's Settings → General → Follow-up behavior. Gemini CLI: experimental model steering (`/settings`, Model Steering).
 - Pick the model and the effort at the start. Switching mid-session can throw away the prompt cache (Claude Code documents this for model, effort and tool-set changes).
 - Unrelated next task? Start a fresh conversation (`/clear` in Claude Code, `/new` in Codex) instead of dragging the old context along.
 - Image generation is expensive: in Codex it uses limits 3–5 times faster on average than a normal turn.
@@ -64,8 +64,8 @@ These five lines are about 150 tokens of always-loaded instructions. Habits that
 | | Claude Code | Codex | Gemini CLI |
 |---|---|---|---|
 | Plan usage | `/usage` | `/status`, `/usage` | `/stats model` |
-| Context use | `/context` | `/status`, `codex debug prompt-input` | `/stats`, `/memory show` |
-| Instructions | `CLAUDE.md` (reads `AGENTS.md` only when there's no CLAUDE.md) | `AGENTS.md`; personal one at `~/.codex/AGENTS.md` | `GEMINI.md`, or AGENTS.md via `context.fileName` |
+| Context use | `/context` | `/status`, `codex debug prompt-input` | `/memory show`, `/mcp` |
+| Instructions | `CLAUDE.md` (by default reads `AGENTS.md` only when there's no CLAUDE.md; an `@AGENTS.md` import reads both) | `AGENTS.md`; personal one at `~/.codex/AGENTS.md` | `GEMINI.md`, or AGENTS.md via `context.fileName` |
 | Skills folder (personal) | `~/.claude/skills/` | `~/.agents/skills/` | `~/.gemini/skills/` or `~/.agents/skills/` |
 | Cheap subagents | `.claude/agents/*.md` with `model: haiku` | `[agents] default_subagent_model` | `.gemini/agents/*.md` with `model:` |
 | Interrupt or steer | `Esc` | `Enter` steers, `Tab` queues | experimental model steering |
