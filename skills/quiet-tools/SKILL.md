@@ -4,7 +4,7 @@ description: Cut tool-output noise (test logs, build logs, installs, huge search
 license: MIT
 metadata:
   author: Sophie Sterling
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Quiet tools
@@ -56,23 +56,24 @@ Keep tool output small: use quiet flags, read files in slices, summarize success
 
 Ask the user before installing this: it edits their Claude Code settings and auto-approves plain test commands.
 
-A PreToolUse hook can rewrite test commands before they run. This one only touches plain `npm test`, `pytest` and `go test` commands. Anything chained, piped, redirected or commented passes through unchanged, so it still gets the normal permission prompt. A passing run comes back as the runner's last three lines (its summary). A failing run comes back as the last 150 lines with the passing-test noise removed. The real exit code survives either way. (The example in the Claude Code cost docs pipes into `head`, which reports success even when tests fail, and prints nothing when they pass.)
+A PreToolUse hook can rewrite test commands before they run. This one only touches plain `npm test`, `pytest` and `go test` commands. Anything chained, piped, redirected or commented passes through unchanged, so it still gets the normal permission prompt. A passing run comes back as the runner's last five lines (its summary). A failing run comes back as the last 150 lines with the passing-test noise removed. The real exit code survives either way, and the rewritten command works in bash, zsh and sh (it avoids `status`, which is read-only in zsh, the Bash tool's shell on a stock Mac). The example in the Claude Code cost docs pipes into `head`, which reports success even when tests fail, and prints nothing when they pass.
 
 Save as `~/.claude/hooks/filter-test-output.sh` and `chmod +x` it:
 
 ```bash
 #!/bin/bash
 input=$(cat)
-cmd=$(echo "$input" | jq -r '.tool_input.command')
+cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
 
 # Only plain test commands: anything chained, piped, redirected or commented passes through untouched.
 unsafe='[;&|<>`$()#]'
 if [[ "$cmd" =~ ^(npm\ test|pytest|go\ test)(\ |$) && ! "$cmd" =~ $unsafe && "$cmd" != *$'\n'* ]]; then
-  filtered_cmd="( log=\$(mktemp); { $cmd; } >\"\$log\" 2>&1; status=\$?; if [ \$status -eq 0 ]; then tail -n 3 \"\$log\"; else grep -v -E '(PASSED|^ok )' \"\$log\" | tail -n 150; fi; rm -f \"\$log\"; exit \$status )"
-  echo "$input" | jq --arg filtered "$filtered_cmd" \
+  # rc, not status: status is read-only in zsh, the Bash tool's shell on a stock Mac
+  filtered_cmd="( out=\$( { $cmd; } 2>&1 ); rc=\$?; if [ \$rc -eq 0 ]; then printf '%s\n' \"\$out\" | tail -n 5; else printf '%s\n' \"\$out\" | grep -v -E '(PASSED|^ok )' | tail -n 150; fi; exit \$rc )"
+  printf '%s' "$input" | jq --arg filtered "$filtered_cmd" \
     '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "allow", updatedInput: (.tool_input + {command: $filtered})}}'
 else
-  echo "{}"
+  echo '{}'
 fi
 ```
 
@@ -88,7 +89,10 @@ Register it in `~/.claude/settings.json`:
 }
 ```
 
-It needs `jq`. Check it with `/hooks`. When the full log is needed, run the tests another way the hook doesn't match, for example `python -m pytest -v`.
+It needs `jq` (on Windows, hooks run through Git Bash and jq has to be installed separately). Check it with `/hooks`.
+
+- Output is held until the run finishes. For suites that run longer than the Bash tool's timeout, raise the timeout or run them another way.
+- Extend the pattern to the commands your project uses (`python -m pytest`, `npx jest`, `pnpm test`, `cargo test`…). Anything it doesn't match runs untouched, so `python -m pytest -v` is the easy way to get the full log.
 
 ### Codex
 
