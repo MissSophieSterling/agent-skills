@@ -1,0 +1,39 @@
+{
+  "name": "sophie-skills",
+  "owner": {
+    "name": "Sophie Sterling"
+  },
+  "metadata": {
+    "description": "Agent Skills that work in Claude Code, Codex, Gemini CLI and other SKILL.md hosts",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "token-saver",
+      "description": "One skill with the whole playbook for making agent usage last longer (all ten tactics bundled as references)",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/token-saver"
+      ]
+    },
+    {
+      "name": "token-saver-tactics",
+      "description": "The ten token-saving tactics as separate skills: pinpoint, usage-budget, context-audit, cheap-subagents, quiet-tools, short-answers, progress-ledger, skillify, workflow-optimizer, limit-window-warmup",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/pinpoint",
+        "./skills/usage-budget",
+        "./skills/context-audit",
+        "./skills/cheap-subagents",
+        "./skills/quiet-tools",
+        "./skills/short-answers",
+        "./skills/progress-ledger",
+        "./skills/skillify",
+        "./skills/workflow-optimizer",
+        "./skills/limit-window-warmup"
+      ]
+    }
+  ]
+}
